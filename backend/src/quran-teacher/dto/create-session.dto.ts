@@ -1,19 +1,21 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDateString, MaxLength } from 'class-validator';
 
 export class CreateSessionDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   studentName: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(150)
   contactInfo: string;
 
   @IsDateString()
-  @IsNotEmpty()
   requestedTime: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(190)
   notes?: string;
 }

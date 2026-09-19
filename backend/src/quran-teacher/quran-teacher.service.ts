@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -74,7 +75,55 @@ export class QuranTeacherService {
   }
 
   async createSession(dto: CreateSessionDto, userId?: number) {
-    return this.prisma.session.create({ data: { ...dto, userId } });
+    const requestedTime = new Date(dto.requestedTime);
+    if (isNaN(requestedTime.getTime())) {
+      throw new BadRequestException('Invalid date');
+    }
+    const now = Date.now();
+    if (requestedTime.getTime() < now + 60 * 60 * 1000) {
+      throw new BadRequestException('Requested time must be at least 1 hour from now');
+    }
+    if (requestedTime.getTime() > now + 180 * 24 * 60 * 60 * 1000) {
+      throw new BadRequestException('Requested time is too far in the future');
+    }
+
+    const windowMs = 60 * 60 * 1000;
+    const conflict = await this.prisma.session.findFirst({
+      where: {
+        status: 'CONFIRMED',
+        requestedTime: {
+          gt: new Date(requestedTime.getTime() - windowMs),
+          lt: new Date(requestedTime.getTime() + windowMs),
+        },
+      },
+    });
+    if (conflict) {
+      throw new BadRequestException('This time slot is not available');
+    }
+
+    const pendingCount = await this.prisma.session.count({
+      where: { contactInfo: dto.contactInfo, status: 'PENDING' },
+    });
+    if (pendingCount >= 3) {
+      throw new BadRequestException('Too many pending requests for this contact');
+    }
+
+    return this.prisma.session.create({
+      data: {
+        studentName: dto.studentName,
+        contactInfo: dto.contactInfo,
+        requestedTime,
+        notes: dto.notes,
+        userId,
+      },
+    });
+  }
+
+  private notFoundOnMissing(error: unknown, message: string): never {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      throw new NotFoundException(message);
+    }
+    throw error;
   }
 
   async getSessions() {
@@ -89,22 +138,34 @@ export class QuranTeacherService {
   }
 
   async deleteSession(id: number) {
-    return this.prisma.session.delete({ where: { id } });
+    try {
+      return await this.prisma.session.delete({ where: { id } });
+    } catch (error) {
+      this.notFoundOnMissing(error, 'Session not found');
+    }
   }
 
   async updateSession(id: number, dto: UpdateSessionDto) {
-    return this.prisma.session.update({ where: { id }, data: dto });
+    try {
+      return await this.prisma.session.update({ where: { id }, data: dto });
+    } catch (error) {
+      this.notFoundOnMissing(error, 'Session not found');
+    }
   }
 
   async replyToSession(id: number, dto: ReplySessionDto) {
-    return this.prisma.session.update({
-      where: { id },
-      data: {
-        adminReply: dto.adminReply,
-        adminReplyAt: new Date(),
-        replySeenAt: null,
-      },
-    });
+    try {
+      return await this.prisma.session.update({
+        where: { id },
+        data: {
+          adminReply: dto.adminReply,
+          adminReplyAt: new Date(),
+          replySeenAt: null,
+        },
+      });
+    } catch (error) {
+      this.notFoundOnMissing(error, 'Session not found');
+    }
   }
 
   async markReplySeen(id: number, userId: number) {
