@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-arabicUI antialiased;
+}
+
+html[lang='en'] body {
+  @apply font-latinUI;
+}
+html[lang='en'] h1,
+html[lang='en'] h2,
+html[lang='en'] .font-arabicDisplay {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Smooth focus ring, visible for keyboard users */
+:focus-visible {
+  outline: 2px solid theme('colors.gilt.500');
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background-color: rgba(199, 168, 85, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print styles used by the "Download CV PDF" flow if a real PDF isn't wired up yet */
+@media print {
+  nav,
+  footer,
+  a[aria-label] {
+    display: none !important;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+  caret-color: inherit !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique @db.VarChar(191)
+  passwordHash  String    @db.VarChar(255)
+  firstName     String    @db.VarChar(100)
+  lastName      String    @db.VarChar(100)
+  role          UserRole  @default(USER)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  refreshTokens RefreshToken[]
+  sessions      Session[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique @db.VarChar(500)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model TeacherProfile {
+  id                    Int      @id @default(autoincrement())
+  name                  Json
+  title                 Json
+  photo                 String?
+  tagline               Json
+  verse                 Json
+  cvFile                String?
+  bio                   Json
+  qualifications        Json
+  experienceYears       Int
+  ageGroups             Json
+  languages             Json
+  teachingStyle         Json
+  online                Boolean  @default(true)
+  statsStudents         Int      @default(0)
+  statsSurahsTaught     Int      @default(0)
+  statsTeachingHours    Int      @default(0)
+  contactWhatsappNumber String?
+  contactWhatsappLink   String?
+  contactEmail          String?
+  contactTelegram       String?
+  contactFacebook       String?
+  contactLinkedin       String?
+  whatsappMessage       Json
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  specialties           Specialty[]
+  certificates          Certificate[]
+  experiences           Experience[]
+  methodologies         Methodology[]
+  testimonials          Testimonial[]
+  countries             Country[]
+  languageSkills        LanguageSkill[]
+  skills                Skill[]
+
+  @@map("teacher_profile")
+}
+
+model Specialty {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  icon             String
+  ar               String
+  en               String
+  order            Int            @default(0)
+  @@map("specialties")
+}
+
+model Certificate {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  title            Json
+  issuer           Json
+  year             String
+  type             Json
+  image            String
+  order            Int            @default(0)
+  @@map("certificates")
+}
+
+model Experience {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  place            Json
+  role             Json
+  period           Json
+  tasks            Json
+  students         Int
+  mode             Json
+  order            Int            @default(0)
+  @@map("experiences")
+}
+
+model Methodology {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  ar               String
+  en               String
+  order            Int            @default(0)
+  @@map("methodologies")
+}
+
+model Testimonial {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  name             Json
+  country          Json
+  photo            String
+  rating           Int
+  text             Json
+  order            Int            @default(0)
+  @@map("testimonials")
+}
+
+model Country {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  ar               String
+  en               String
+  order            Int            @default(0)
+  @@map("countries")
+}
+
+model LanguageSkill {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  lang             Json
+  level            Json
+  percent          Int
+  order            Int            @default(0)
+  @@map("language_skills")
+}
+
+model Skill {
+  id               Int            @id @default(autoincrement())
+  teacherProfileId Int
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  ar               String
+  en               String
+  percent          Int
+  order            Int            @default(0)
+  @@map("skills")
+}
+
+enum SessionStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Session {
+  id            Int           @id @default(autoincrement())
+  studentName   String
+  contactInfo   String
+  requestedTime DateTime
+  status        SessionStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  userId        Int?
+  user          User?         @relation(fields: [userId], references: [id])
+  adminReply    String?   @db.Text
+  adminReplyAt  DateTime?
+  replySeenAt   DateTime?
+  @@index([status])
+  @@index([userId])
+  @@map("sessions")
+}
