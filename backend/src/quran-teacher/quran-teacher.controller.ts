@@ -1,4 +1,5 @@
 import { Controller, Get, Patch, Post, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { QuranTeacherService } from './quran-teacher.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -28,6 +29,7 @@ export class QuranTeacherController {
 
   @UseGuards(OptionalJwtAuthGuard)
   @Post('sessions')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async createSession(@Body() dto: CreateSessionDto, @CurrentUser('id') userId?: number) {
     return this.teacherService.createSession(dto, userId);
   }

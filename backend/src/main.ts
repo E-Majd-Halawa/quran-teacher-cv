@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
@@ -7,7 +8,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.set('trust proxy', 1);
   app.use(helmet());
   app.use(cookieParser());
   const configService = app.get(ConfigService);
@@ -36,18 +38,20 @@ async function bootstrap() {
     }),
   );
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Quran Teacher API')
-    .setDescription('Quran Teacher CV API Documentation')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup(`${apiPrefix}/docs`, app, document);
+  if (process.env.NODE_ENV !== 'production') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Quran Teacher API')
+      .setDescription('Quran Teacher CV API Documentation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup(`${apiPrefix}/docs`, app, document);
+    console.log(`Swagger docs: http://localhost:${port}/${apiPrefix}/docs`);
+  }
 
   await app.listen(port);
-  console.log(`🚀 Application running on: http://localhost:${port}/${apiPrefix}`);
-  console.log(`📚 Swagger docs: http://localhost:${port}/${apiPrefix}/docs`);
+  console.log(`Application running on: http://localhost:${port}/${apiPrefix}`);
 }
 
 bootstrap();

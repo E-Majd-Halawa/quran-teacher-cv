@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
+import { createHash } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -22,6 +23,10 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
+
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
+  }
 
   private getBcryptCost(): number {
     return this.configService.get<number>('bcrypt.cost') || 12;
@@ -52,7 +57,7 @@ export class AuthService {
 
     await this.prisma.refreshToken.create({
       data: {
-        token,
+        token: this.hashToken(token),
         userId,
         expiresAt,
       },
@@ -61,7 +66,7 @@ export class AuthService {
 
   private async revokeRefreshToken(token: string): Promise<void> {
     await this.prisma.refreshToken.deleteMany({
-      where: { token },
+      where: { token: this.hashToken(token) },
     });
   }
 
@@ -140,7 +145,7 @@ export class AuthService {
       });
 
       const storedToken = await this.prisma.refreshToken.findUnique({
-        where: { token: refreshToken },
+        where: { token: this.hashToken(refreshToken) },
         include: { user: true },
       });
 
@@ -238,6 +243,8 @@ export class AuthService {
       where: { id: userId },
       data: { passwordHash },
     });
+
+    await this.revokeAllUserRefreshTokens(userId);
 
     return { message: 'Password updated successfully' };
   }
