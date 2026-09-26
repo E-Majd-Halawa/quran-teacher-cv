@@ -44,15 +44,19 @@ export default function Hero() {
               <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
               {t.hero.cta2}
             </button>
-            <a
-              href={teacher.cvFile}
-              download
-              className="px-6 py-3 rounded-full border border-gilt-500/60 text-gilt-600 dark:text-gilt-400 hover:bg-gilt-500/10 font-arabicUI text-sm md:text-base transition-colors flex items-center gap-2"
-            >
-              <FileText className="w-4 h-4" strokeWidth={1.5} />
-              {t.hero.cta3}
-              <Download className="w-3.5 h-3.5" strokeWidth={1.5} />
-            </a>
+            {teacher.cvFile && (
+              <a
+                href={teacher.cvFile}
+                download={teacher.cvFile.split('/').pop()}
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-3 rounded-full border border-gilt-500/60 text-gilt-600 dark:text-gilt-400 hover:bg-gilt-500/10 font-arabicUI text-sm md:text-base transition-colors flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" strokeWidth={1.5} />
+                {t.hero.cta3}
+                <Download className="w-3.5 h-3.5" strokeWidth={1.5} />
+              </a>
+            )}
           </div>
         </div>
 

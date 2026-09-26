@@ -7,15 +7,18 @@ export default function Contact() {
   const [ref, visible] = useReveal();
   const c = teacher.contact;
 
-  const waHref = `${c.whatsapp.link}?text=${encodeURIComponent(pick(teacher.whatsappMessage))}`;
+  const waVal = typeof c.whatsapp === 'object' ? c.whatsapp?.link || c.whatsapp?.number : c.whatsapp;
+  const waHref = waVal ? `${typeof c.whatsapp === 'object' ? c.whatsapp.link : `https://wa.me/${c.whatsapp.replace(/\D/g, '')}`}?text=${encodeURIComponent(pick(teacher.whatsappMessage))}` : '';
 
   const channels = [
-    { icon: MessageCircle, label: t.contact.whatsapp, href: waHref, accent: true },
-    { icon: Mail, label: t.contact.email, href: `mailto:${c.email}` },
-    { icon: Send, label: t.contact.telegram, href: c.telegram },
-    { icon: Facebook, label: t.contact.facebook, href: c.facebook },
-    { icon: Linkedin, label: t.contact.linkedin, href: c.linkedin },
-  ];
+    waVal && { icon: MessageCircle, label: t.contact.whatsapp, href: waHref, accent: true },
+    c.email && { icon: Mail, label: t.contact.email, href: `mailto:${c.email}` },
+    c.telegram && { icon: Send, label: t.contact.telegram, href: c.telegram },
+    c.facebook && { icon: Facebook, label: t.contact.facebook, href: c.facebook },
+    c.linkedin && { icon: Linkedin, label: t.contact.linkedin, href: c.linkedin },
+  ].filter(Boolean);
+
+  if (!channels.length) return null;
 
   return (
     <section id="contact" className="py-24 md:py-32 bg-sand-50 dark:bg-night-900">

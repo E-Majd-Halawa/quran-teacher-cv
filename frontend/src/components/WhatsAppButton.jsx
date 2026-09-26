@@ -3,7 +3,9 @@ import { useApp } from '../context/AppContext';
 
 export default function WhatsAppButton() {
   const { t, pick, teacher } = useApp();
-  const href = `${teacher.contact.whatsapp.link}?text=${encodeURIComponent(pick(teacher.whatsappMessage))}`;
+  const waVal = typeof teacher.contact.whatsapp === 'object' ? teacher.contact.whatsapp?.link || teacher.contact.whatsapp?.number : teacher.contact.whatsapp;
+  if (!waVal) return null;
+  const href = `${typeof teacher.contact.whatsapp === 'object' ? teacher.contact.whatsapp.link : `https://wa.me/${teacher.contact.whatsapp.replace(/\D/g, '')}`}?text=${encodeURIComponent(pick(teacher.whatsappMessage))}`;
 
   return (
     <a

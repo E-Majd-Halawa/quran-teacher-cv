@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import Navbar from './components/Navbar';
@@ -8,6 +9,7 @@ import Certificates from './components/Certificates';
 import Experience from './components/Experience';
 import Methodology from './components/Methodology';
 import Achievements from './components/Achievements';
+import Virtue from './components/Virtue';
 import Testimonials from './components/Testimonials';
 import Countries from './components/Countries';
 import LanguagesSkills from './components/LanguagesSkills';
@@ -23,11 +25,37 @@ import NotificationsPage from './pages/NotificationsPage';
 
 function AppContent() {
   const { loading, error, user, t, dir } = useApp();
+  const [longLoading, setLongLoading] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      setLongLoading(false);
+      timer = setTimeout(() => {
+        setLongLoading(true);
+      }, 5000);
+    } else {
+      setLongLoading(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="font-arabicUI text-lg">Loading...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-sand-50 dark:bg-night-900 text-palm-900 dark:text-sand-100">
+        <div className="w-12 h-12 border-4 border-gilt-500 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="font-arabicUI text-base md:text-lg mb-2">
+          {dir === 'rtl'
+            ? 'جاري تحميل البيانات… قد يستغرق هذا حتى دقيقة عند أول زيارة بعد فترة خمول'
+            : 'Loading data… this may take up to a minute on the first visit after inactivity'}
+        </p>
+        {longLoading && (
+          <p className="font-arabicUI text-xs md:text-sm text-ink/60 dark:text-sand-200/60 animate-pulse">
+            {dir === 'rtl'
+              ? 'الخادم قيد الاستيقاظ من وضع السكون، شكرًا لصبرك...'
+              : 'Server is waking up from inactivity, thank you for your patience...'}
+          </p>
+        )}
       </div>
     );
   }
@@ -51,6 +79,7 @@ function AppContent() {
         <Experience />
         <Methodology />
         <Achievements />
+        <Virtue />
         <Testimonials />
         <Countries />
         <LanguagesSkills />

@@ -10,7 +10,9 @@ export default function Certificates() {
   const [ref, visible] = useReveal();
   const [active, setActive] = useState(null);
 
-  const items = [...teacher.certificates].sort((a, b) => Number(a.year) - Number(b.year));
+  if (!teacher.certificates || teacher.certificates.length === 0) return null;
+
+  const items = teacher.certificates;
 
   return (
     <section id="certificates" className="py-24 md:py-32 bg-sand-50 dark:bg-night-900">
@@ -35,13 +37,17 @@ export default function Certificates() {
 
                 <div className={`ms-20 md:ms-0 md:w-1/2 ${i % 2 === 0 ? 'md:pe-14' : 'md:ps-14'}`}>
                   <div className="rounded-2xl border border-palm-900/10 dark:border-sand-100/10 bg-white dark:bg-night-800 p-6 hover:border-gilt-500/50 transition-colors">
-                    <p className="font-arabicUI text-gilt-600 dark:text-gilt-400 text-sm mb-1">{c.year}</p>
+                    {c.year && (
+                      <p className="font-arabicUI text-gilt-600 dark:text-gilt-400 text-sm mb-1">{c.year}</p>
+                    )}
                     <h3 className="font-arabicDisplay text-xl text-palm-900 dark:text-sand-100 mb-2">
                       {pick(c.title)}
                     </h3>
-                    <p className="font-arabicUI text-sm text-ink/70 dark:text-sand-200/70 mb-1">
-                      {t.certificates.issuer}: {pick(c.issuer)}
-                    </p>
+                    {c.issuer && (
+                      <p className="font-arabicUI text-sm text-ink/70 dark:text-sand-200/70 mb-1">
+                        {t.certificates.issuer}: {pick(c.issuer)}
+                      </p>
+                    )}
                     <p className="font-arabicUI text-sm text-ink/70 dark:text-sand-200/70 mb-4">
                       {t.certificates.type}: {pick(c.type)}
                     </p>

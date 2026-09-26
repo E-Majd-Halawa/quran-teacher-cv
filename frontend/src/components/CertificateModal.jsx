@@ -37,14 +37,14 @@ export default function CertificateModal({ certificate, onClose }) {
         <img
           src={certificate.image}
           alt={pick(certificate.title)}
-          className="w-full max-h-[60vh] object-cover"
+          className="w-full max-h-[70vh] object-contain bg-sand-100 dark:bg-night-900"
         />
         <div className="p-6">
           <h3 className="font-arabicDisplay text-xl text-palm-900 dark:text-sand-100 mb-1">
             {pick(certificate.title)}
           </h3>
           <p className="font-arabicUI text-sm text-ink/70 dark:text-sand-200/70">
-            {pick(certificate.issuer)} · {certificate.year}
+            {[certificate.issuer && pick(certificate.issuer), certificate.year].filter(Boolean).join(" · ")}
           </p>
         </div>
       </div>

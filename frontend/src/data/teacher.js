@@ -16,7 +16,7 @@ const teacher = {
     ar: "﴿ وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا ﴾",
     en: '"…and recite the Qur’an with measured recitation." — Al-Muzzammil 73:4',
   },
-  cvFile: "/cv/mohammed-alansari-cv.pdf",
+  cvFile: "/cv/moeen-najjar-cv.pdf",
 
   // ---------- نبذة عني | About ----------
   about: {
@@ -84,37 +84,24 @@ const teacher = {
   // ---------- الإجازات والشهادات | Certificates ----------
   certificates: [
     {
-      title: { ar: "إجازة برواية حفص عن عاصم", en: "Ijazah in Hafs an Asim" },
-      issuer: {
-        ar: "دار القرآن الكريم —  فلسطين -غزة",
-        en: "Dar Al-Quran Al-Kareem — Madinah",
-      },
-      year: "2019",
+      title: { ar: "إجازة السند المتصل", en: "Ijazah of the Connected Sanad" },
       type: { ar: "إجازة سند متصل", en: "Connected-chain Ijazah" },
-      image:
-        "https://images.unsplash.com/photo-1585036156171-384164a8c675?q=80&w=900&auto=format&fit=crop",
+      image: "/images/certificates/ijaza-sanad.svg",
     },
     {
-      title: {
-        ar: "دبلوم علوم القرآن والتجويد",
-        en: "Diploma in Quranic Sciences & Tajweed",
-      },
-      issuer: { ar: "معهد الإمام الشاطبي", en: "Imam Al-Shatibi Institute" },
-      year: "2017",
-      type: { ar: "دبلوم متخصص", en: "Specialized Diploma" },
-      image:
-        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=900&auto=format&fit=crop",
+      title: { ar: "إجازة السند المتصل بالقراءات الصغرى والكبرى", en: "Ijazah of the Connected Sanad in the Minor & Major Qira'at" },
+      type: { ar: "إجازة سند متصل", en: "Connected-chain Ijazah" },
+      image: "/images/certificates/ijaza-qiraat-sughra-kubra.svg",
     },
     {
-      title: {
-        ar: "شهادة معلمي القرآن المعتمدين",
-        en: "Certified Quran Teachers Certificate",
-      },
-      issuer: { ar: "أكاديمية النور القرآنية", en: "Al-Noor Quran Academy" },
-      year: "2015",
-      type: { ar: "شهادة تأهيل تدريسي", en: "Teaching Qualification" },
-      image:
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=900&auto=format&fit=crop",
+      title: { ar: "إجازة السند المتصل بالقراءات الصغرى", en: "Ijazah of the Connected Sanad in the Minor Qira'at" },
+      type: { ar: "إجازة سند متصل", en: "Connected-chain Ijazah" },
+      image: "/images/certificates/ijaza-qiraat-sughra.svg",
+    },
+    {
+      title: { ar: "شهادة شكر وتقدير", en: "Certificate of Appreciation" },
+      type: { ar: "شهادة شكر وتقدير", en: "Appreciation Certificate" },
+      image: "/images/certificates/shukr-taqdeer.svg",
     },
   ],
 

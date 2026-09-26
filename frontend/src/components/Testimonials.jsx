@@ -7,6 +7,8 @@ export default function Testimonials() {
   const { t, pick, teacher } = useApp();
   const [ref, visible] = useReveal();
 
+  if (!teacher.testimonials || teacher.testimonials.length === 0) return null;
+
   return (
     <section id="testimonials" className="py-24 md:py-32 bg-sand-100/60 dark:bg-night-800/40">
       <div className="max-w-7xl mx-auto px-5 md:px-8">
